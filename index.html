@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পাসওয়ার্ড যাচাই</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f4f8;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            width: 300px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: slide-fade 1s forwards, color-change 5s infinite;
+        }
+        @keyframes slide-fade {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes color-change {
+            0% { color: #ff0000; }
+            25% { color: #00ff00; }
+            50% { color: #0000ff; }
+            75% { color: #ffff00; }
+            100% { color: #ff00ff; }
+        }
+        input[type="password"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s, color 0.3s;
+            color: black;
+        }
+        input[type="password"]:focus {
+            border-color: #007BFF;
+            outline: none;
+            color: blue;
+        }
+        button {
+            padding: 8px;
+            font-size: 14px;
+            color: transparent;
+            background-color: transparent;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+            transition: background-color 0.3s;
+            background-image: linear-gradient(45deg, #ff0000, #00ff00, #0000ff, #ffff00, #ff00ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: pulsate 1.5s infinite;
+        }
+        @keyframes pulsate {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .footer {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+            position: relative;
+            display: block;
+            text-align: center;
+        }
+        .toast {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            color: white;
+            border-radius: 5px;
+            font-size: 20px;
+            animation: shake 0.5s;
+        }
+        .wrong {
+            background: rgba(255, 0, 0, 0.8);
+        }
+        .empty {
+            background: rgba(255, 165, 0, 0.8);
+        }
+        @keyframes shake {
+            0% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-55%, -50%); }
+            50% { transform: translate(-50%, -55%); }
+            75% { transform: translate(-45%, -50%); }
+            100% { transform: translate(-50%, -50%); }
+        }
+        .emoji {
+            font-size: 80px;
+            display: none;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            width: 100%;
+        }
+        .dropdown input[type="password"] {
+            width: 80%;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        var currentPassword = "S1"; // Initial password
+        var newPassword = localStorage.getItem("newPassword") || ""; // Get new password from localStorage
+
+        function checkPassword() {
+            var password = document.getElementById("password").value;
+            var toast = document.getElementById("toast");
+            var emoji = document.getElementById("emoji");
+
+            if (password === "") {
+                showToast("ENTER YOUR PASSWORD", "empty");
+                return;
+            }
+
+            if (password === currentPassword || password === newPassword) {
+                window.location.href = "https://drive.google.com/drive/folders/1w3dr7tYz2Cd8va5oQYQALw7JOSTf5_bH"; // Change to your desired URL
+            } else {
+                showToast("WRONG PASSWORD", "wrong");
+                emoji.style.display = "block"; // Show emoji when wrong password
+            }
+        }
+
+        function showToast(message, type) {
+            var toast = document.getElementById("toast");
+            var emoji = document.getElementById("emoji");
+            toast.textContent = message;
+            toast.className = "toast " + type; 
+            toast.style.display = "block";
+            emoji.style.display = "block"; // Show emoji when the password is wrong
+
+            setTimeout(() => {
+                toast.style.display = "none";
+                emoji.style.display = "none"; // Hide emoji along with the toast
+            }, 2000);
+        }
+
+        function changePassword() {
+            var newPwd = document.getElementById("newPassword").value;
+            var successMessage = document.getElementById("successMessage");
+            
+            if (newPwd) {
+                newPassword = newPwd;
+                localStorage.setItem("newPassword", newPassword);
+                successMessage.textContent = "পাসওয়ার্ড চেন্জ করা হয়েছে!";
+                
+                successMessage.style.backgroundColor = getRandomColor();
+                successMessage.style.display = "block";
+                
+                setTimeout(() => {
+                    successMessage.style.display = "none";
+                }, 2000);
+                
+                document.getElementById("newPassword").value = ""; 
+            } else {
+                alert("নতুন পাসওয়ার্ড প্রদান করুন।");
+            }
+        }
+
+        function getRandomColor() {
+            const colors = ['#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#FFC0CB'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function togglePasswordChange() {
+            var dropdown = document.querySelector(".dropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>ENTER YOUR PASSWORD TO CONTINUE YOUR INFO</h2>
+        <input type="password" id="password" placeholder="ENTER YOUR PASSWORD">
+        <button onclick="checkPassword()">SUBMIT PASSWORD</button>
+        <div id="toast" class="toast"></div>
+        <div id="emoji" class="emoji" onclick="togglePasswordChange()">😠</div>
+        <div class="footer">
+            DEVELOPER SHUVO
+        </div>
+        <div id="successMessage" style="display: none; padding: 10px; border-radius: 5px; margin-top: 10px;"></div>
+        <div class="dropdown">
+            <input type="password" id="newPassword" placeholder="নতুন পাসওয়ার্ড">
+            <button onclick="changePassword()">পাসওয়ার্ড পরিবর্তন করুন</button>
+        </div>
+    </div>
+</body>
+</html>
